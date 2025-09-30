@@ -64,7 +64,6 @@ jobs:
       - name: Detect changed feature files
         id: detect
         run: |
-          # Compares the PR branch HEAD with the base branch (main)
           FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '.feature$' || echo "")
           echo "changed_files=$FILES" >> $GITHUB_OUTPUT
       - name: Install GitHub Copilot CLI
@@ -74,7 +73,7 @@ jobs:
         run: |
           # Use GitHub token for authentication
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          copilot login --github-token $GITHUB_TOKEN
+          copilot auth login --github-token $GITHUB_TOKEN
 
       - name: Invoke Copilot Agent to Generate Scripts
         if: steps.detect.outputs.changed_files != ''
