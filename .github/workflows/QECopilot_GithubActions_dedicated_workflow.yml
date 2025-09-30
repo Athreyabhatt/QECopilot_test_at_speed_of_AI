@@ -1,16 +1,20 @@
 #======================================================================================
 # WORKFLOW FOR SCENARIO 2: SEPARATE QA TEAM (NON-PROD)
-# Trigger: On Pull Request to `main` from a branch prefixed with `qa/`.
-# Action: Runs AI-generated tests against a live, non-prod environment URL.
+# Trigger: On Pull Request to `main` (created by dev or QE) when QE engineers modify feature files.
+# Action: QE engineers create/update .feature files → QECopilot generates test scripts → Run tests against non-prod.
 #======================================================================================
 name: 'QECopilot: Separate QA Team CI (Non-Prod)'
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 'main'
     paths:
-      - 'features/**' # Only trigger if feature files are changed
+      - 'features/**' # Trigger when any .feature files are changed
+      - '.github/instructions/**' # Trigger when copilot instructions change
+      - '.github/workflows/QECopilot_GithubActions_dedicated_workflow.yml' # Trigger when this workflow changes
+  workflow_dispatch: # Allow manual triggering of the workflow
 
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
@@ -56,13 +60,12 @@ jobs:
       - name: Invoke Copilot Agent to Generate Scripts
         if: steps.changed_features.outputs.changed_files != ''
         run: |
-          echo "QECopilot activated for the following files:"
           echo "${{ steps.changed_features.outputs.changed_files }}"
           for file in ${{ steps.changed_features.outputs.changed_files }}; do
             FEATURE_CONTENT=$(cat "$file")
             INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
             
-            copilot -p "You are a test automation code generator. Feature File: $FEATURE_CONTENT Instructions: $INSTRUCTIONS Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool 'write' --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
+            copilot -p "You are a test automation code generator. Feature File: $(echo "$FEATURE_CONTENT" | tr -d '\n') Instructions: $(echo "$INSTRUCTIONS" | tr -d '\n') Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool 'write' --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
           done
 
       - name: Install Playwright browsers
