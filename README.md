@@ -54,8 +54,8 @@ QECopilot_test_at_speed_of_AI/
 
 ## 🎬 How It Works
 
-1. **Developer** creates/modifies a Gherkin feature file
-2. **Developer** opens a Pull Request
+1. **Quality Engineer** creates/modifies a Gherkin feature file
+2. **Developer/QE** opens a Pull Request
 3. **GitHub Actions** triggers the workflow
 4. **Copilot CLI** reads the feature file and instructions
 5. **Copilot Agent** generates Page Object and Step Definition files
@@ -309,7 +309,7 @@ copilot -p "prompt" \
 ### Workflow Execution Flow
 
 ```
-Developer creates/modifies .feature file
+Quality Engineer creates/modifies .feature file
          ↓
 Opens Pull Request to main
          ↓

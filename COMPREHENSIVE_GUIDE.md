@@ -133,7 +133,7 @@ The GitHub Actions workflows **automatically** select the correct instruction fi
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. Developer Sets Automation Stack in Workflow             │
+│  1. Quality Engineer Sets Automation Stack in Workflow             │
 │                                                              │
 │  env:                                                        │
 │    AUTOMATION_STACK: playwright-typescript                  │
