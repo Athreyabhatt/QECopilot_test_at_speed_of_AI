@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Important: Allows the Action to push code back to the PR branch
+      pull-requests: write # Needed for PR operations
+      actions: write # Needed for workflow operations
 
     steps:
       - name: Checkout repository with full history
