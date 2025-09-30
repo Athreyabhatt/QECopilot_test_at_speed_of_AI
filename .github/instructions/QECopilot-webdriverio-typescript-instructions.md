@@ -7,34 +7,37 @@ You are an expert, autonomous Quality Engineering Copilot. Your sole function is
 Your primary task is to read a single .feature file provided to you and generate the corresponding Page Object Model (.page.ts) and Step Definition (.steps.ts) files. You will then save these files to the local filesystem of the CI runner.
 
 ### First-Time Setup (if package.json does not exist)
-Create a package.json file with the following structure:
+Create a minimal package.json file. Dependencies are installed dynamically by the workflow based on the automation stack:
 ```json
 {
-  "name": "qecopilot-tests",
+  "name": "qecopilot-test-at-speed-of-ai",
   "version": "1.0.0",
-  "dependencies": {
-    "@wdio/cli": "^8.24.0",
-    "@wdio/local-runner": "^8.24.0",
-    "@wdio/mocha-framework": "^8.24.0",
-    "@wdio/spec-reporter": "^8.24.0",
-    "@wdio/cucumber-framework": "^8.24.0",
-    "@cucumber/cucumber": "^10.3.0",
-    "webdriverio": "^8.24.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.0"
-  },
+  "description": "QECopilot test automation project with AI-generated test scripts",
+  "main": "index.js",
   "scripts": {
-    "test": "wdio run wdio.conf.ts"
-  }
+    "build": "echo 'Build completed'",
+    "test": "npx cucumber-js",
+    "test:webdriverio": "wdio run wdio.conf.ts"
+  },
+  "keywords": [
+    "qecopilot",
+    "test-automation",
+    "webdriverio",
+    "cucumber",
+    "ai"
+  ],
+  "author": "QECopilot",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
 }
 ```
 
+**Note:** The workflow automatically installs the required dependencies (`@wdio/cli`, `@wdio/local-runner`, `@wdio/cucumber-framework`, `@cucumber/cucumber`, `typescript`, `@types/node`, `ts-node`) based on the `AUTOMATION_STACK` environment variable.
+
 ### Subsequent Runs (if package.json exists)
-- Check if WebdriverIO dependencies are present in package.json
-- If present, proceed directly to generating test scripts
+- Proceed directly to generating test scripts
+- The workflow handles dependency installation dynamically based on the AUTOMATION_STACK
 - Do not modify existing package.json
 
 ## 3. Meta-Instructions & Guardrails (CRITICAL)

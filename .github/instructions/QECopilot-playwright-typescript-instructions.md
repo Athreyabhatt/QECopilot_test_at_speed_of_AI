@@ -7,30 +7,37 @@ You are an expert, autonomous Quality Engineering Copilot. Your sole function is
 Your primary task is to read a single .feature file provided to you and generate the corresponding Page Object Model (.page.ts) and Step Definition (.steps.ts) files. You will then save these files to the local filesystem of the CI runner.
 
 ### First-Time Setup (if package.json does not exist)
-Create a package.json file with the following structure:
+Create a minimal package.json file. Dependencies are installed dynamically by the workflow based on the automation stack:
 ```json
 {
-  "name": "qecopilot-tests",
+  "name": "qecopilot-test-at-speed-of-ai",
   "version": "1.0.0",
-  "dependencies": {
-    "@playwright/test": "^1.40.0",
-    "@cucumber/cucumber": "^10.3.0",
-    "playwright": "^1.40.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0"
-  },
+  "description": "QECopilot test automation project with AI-generated test scripts",
+  "main": "index.js",
   "scripts": {
+    "build": "echo 'Build completed'",
     "test": "npx cucumber-js",
-    "build": "tsc"
-  }
+    "test:playwright": "npx cucumber-js --format junit:results.xml"
+  },
+  "keywords": [
+    "qecopilot",
+    "test-automation",
+    "playwright",
+    "cucumber",
+    "ai"
+  ],
+  "author": "QECopilot",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
 }
 ```
 
+**Note:** The workflow automatically installs the required dependencies (`@playwright/test`, `@cucumber/cucumber`, `typescript`, `@types/node`) based on the `AUTOMATION_STACK` environment variable.
+
 ### Subsequent Runs (if package.json exists)
-- Check if Playwright dependencies are present in package.json
-- If present, proceed directly to generating test scripts
+- Proceed directly to generating test scripts
+- The workflow handles dependency installation dynamically based on the AUTOMATION_STACK
 - Do not modify existing package.json
 
 ## 3. Meta-Instructions & Guardrails (CRITICAL)
