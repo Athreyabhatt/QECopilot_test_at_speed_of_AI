@@ -1,6 +1,6 @@
-# QECopilot - AI-Powered Test Automation
+# QECopilot - Test at speed of AI
 
-**Autonomous test script generation using GitHub Copilot CLI in agent mode**
+**A seamless and autonomous test automation solution for the era of AI**
 
 ## 📖 Complete Documentation
 
@@ -17,6 +17,7 @@ QECopilot is an AI-powered system that automatically generates test automation s
 - **Zero manual coding** for test automation
 - **Continuous testing** at development speed
 - **Framework agnostic** - Works with Playwright, Selenium, WebdriverIO
+- **QE-led testing** - Quality Engineers create feature files with testing expertise
 
 ## 📁 Repository Structure
 

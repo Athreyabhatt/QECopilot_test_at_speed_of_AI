@@ -1,6 +1,6 @@
-# QECopilot Comprehensive Guide
+# QECopilot - Test at speed of AI
 
-**Autonomous test script generation using GitHub Copilot CLI in agent mode**
+**A seamless and autonomous test automation solution for the era of AI**
 
 ## 🚀 What is QECopilot?
 
@@ -8,16 +8,16 @@ QECopilot is an AI-powered system that automatically generates test automation s
 
 ### The Problem
 - Development teams move at AI-fueled speed
-- Traditional test automation can't keep up
 - QE teams become bottlenecks
 - Manual test scripting is time-consuming
 
 ### The Solution
 QECopilot uses GitHub Copilot CLI to autonomously generate test automation code, enabling:
-- **80-95% reduction** in test scripting time
+- **80% reduction** in test scripting time
 - **Instant test generation** from feature files
 - **Zero manual coding** for test automation
 - **Continuous testing** at development speed
+- **QE-led testing** - Quality Engineers create feature files with testing expertise and critical thinking
 
 ## ✨ Key Features
 
@@ -31,7 +31,7 @@ QECopilot uses GitHub Copilot CLI to autonomously generate test automation code,
 
 ## 🎬 How It Works
 
-1. **Developer** creates/modifies a Gherkin feature file
+1. **Quality Engineer** creates/modifies a Gherkin feature file with testing expertise
 2. **PR Creation** triggers the GitHub Actions workflow
 3. **Copilot Agent** reads the feature file and framework-specific instructions
 4. **Code Generation** - Copilot generates test automation scripts

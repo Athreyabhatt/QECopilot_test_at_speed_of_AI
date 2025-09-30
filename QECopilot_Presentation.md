@@ -1,5 +1,5 @@
-Project: QECopilot
-Tagline: Your Process, Your Teams, Your Framework, Our Automation.
+Project: QECopilot - Test at speed of AI
+Tagline: A seamless and autonomous test automation solution for the era of AI
 
 **NEW: Framework Agnostic - Works with Your Existing Stack**
 
@@ -34,7 +34,9 @@ Simply configure your preferred stack, and Copilot generates framework-specific 
 Our system offers two distinct modes of operation, powered by the same intelligent engine.
 
 Scenario 1: The Integrated Team Workflow
-{{ ... }}
+
+Developers and QEs work together in the same repository. QEs create feature files, and the system automatically generates and runs tests.
+
 Result: Full validation of a deployed application, led by QE.
 
 4. Outcome & Benefits: From Bottleneck to Booster
@@ -58,7 +60,7 @@ You are no longer limited by hiring. Your entire Quality Engineering team is now
 
  100% QE Team Empowerment
 
-The skills gap is eliminated. Every single QE team member can now generate robust, maintainable automation scripts without writing a single line of code. Works with your team's preferred framework and language (TypeScript or Java).
+The skills gap is eliminated. Every single QE team member can now create comprehensive feature files with their testing expertise and generate robust, maintainable automation scripts without writing a single line of code. Works with your team's preferred framework and language (TypeScript or Java).
 
  Framework Flexibility
 

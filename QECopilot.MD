@@ -1,4 +1,6 @@
-Hackathon Demo Guide: QECopilot
+Hackathon Demo Guide: QECopilot - Test at speed of AI
+
+**A seamless and autonomous test automation solution for the era of AI**
 Objective: To demonstrate, in under 5 minutes, how our AI-powered system autonomously generates, executes, and commits test automation scripts, adapting to a team's specific workflow and solving the AI-era testing bottleneck.
 
 **NEW: Framework Agnostic Support**
