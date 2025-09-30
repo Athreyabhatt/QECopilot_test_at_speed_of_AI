@@ -1,0 +1,24 @@
+{
+  "name": "qecopilot-test-at-speed-of-ai",
+  "version": "1.0.0",
+  "description": "QECopilot test automation project with AI-generated test scripts",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "test": "npx cucumber-js",
+    "test:playwright": "npx cucumber-js --format junit:results.xml",
+    "test:wdio": "npx wdio run wdio.conf.js"
+  },
+  "keywords": [
+    "qecopilot",
+    "test-automation",
+    "playwright",
+    "webdriverio",
+    "cucumber",
+    "ai"
+  ],
+  "author": "QECopilot",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

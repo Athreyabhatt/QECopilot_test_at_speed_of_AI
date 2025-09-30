@@ -2,6 +2,15 @@
 # WORKFLOW FOR SCENARIO 1: INTEGRATED DEV & QA TEAM
 # Trigger: On Pull Request to `main` (created by dev or QE) when QE engineers modify feature files.
 # Action: QE engineers create/update .feature files → QECopilot generates test scripts → Run tests locally.
+# 
+# AUTOMATION STACK SUPPORT:
+# - playwright-typescript: Uses Playwright with TypeScript (default)
+# - webdriverio-typescript: Uses WebDriverIO with TypeScript  
+# - playwright-java: Uses Playwright with Java (requires pom.xml)
+# - selenium-java: Uses Selenium with Java (requires pom.xml)
+# 
+# The workflow automatically detects the AUTOMATION_STACK environment variable and
+# configures the build, test execution, and dependencies accordingly.
 #======================================================================================
 name: 'QECopilot: Integrated Team CI'
 
@@ -14,17 +23,20 @@ on:
       - 'features/**' # Trigger when any .feature files are changed
       - '.github/instructions/**' # Trigger when copilot instructions change
       - '.github/workflows/QECopilot_GithubActions_integreated_workflow.yml' # Trigger when this workflow changes
-  workflow_dispatch: # Allow manual triggering of the workflow
 
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
   AUTOMATION_STACK: playwright-typescript
 jobs:
-  generate_and_test_locally:
+  generate_and_test:
     runs-on: ubuntu-latest
+    # Specifies which environment to use for secrets and variables
+    # No environment specified for local testing
     permissions:
-      contents: write # Important: Allows the Action to push code back to the PR branch
-
+      contents: write
+    # Disable email notifications for failures
+    if: github.event_name != 'workflow_dispatch'
+    
     steps:
       - name: Checkout repository with full history
         uses: actions/checkout@v4
@@ -36,8 +48,18 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies based on automation stack
+        run: |
+          if [ "${{ env.AUTOMATION_STACK }}" == "playwright-java" ] || [ "${{ env.AUTOMATION_STACK }}" == "selenium-java" ]; then
+            # Java projects - only install core dependencies
+            npm install @github/copilot @cucumber/cucumber typescript @types/node
+          elif [ "${{ env.AUTOMATION_STACK }}" == "webdriverio-typescript" ]; then
+            # WebDriverIO projects
+            npm install @github/copilot @cucumber/cucumber @wdio/cli @wdio/cucumber-framework @wdio/local-runner @wdio/spec-reporter @wdio/junit-reporter typescript @types/node
+          else
+            # Default to Playwright TypeScript
+            npm install @github/copilot @cucumber/cucumber @playwright/test typescript @types/node
+          fi
 
       - name: Detect changed feature files
         id: detect
@@ -66,14 +88,53 @@ jobs:
             copilot -p "You are a test automation code generator. Feature File: $(cat "$file") Instructions: $(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md) Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool 'write' --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
           done
 
-      - name: Build the application locally
-        run: npm run build # Assumes a standard build script exists in package.json
+      - name: Setup Java environment (if needed)
+        if: env.AUTOMATION_STACK == 'playwright-java' || env.AUTOMATION_STACK == 'selenium-java'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Build application based on automation stack
+        run: |
+          if [ "${{ env.AUTOMATION_STACK }}" == "playwright-java" ] || [ "${{ env.AUTOMATION_STACK }}" == "selenium-java" ]; then
+            # Java projects use Maven
+            if [ -f "pom.xml" ]; then
+              mvn compile
+            else
+              echo "Warning: pom.xml not found. Java build skipped."
+            fi
+          else
+            # Node.js projects use npm
+            npm run build
+          fi
 
-      - name: Run Playwright tests against local build
-        run: npx cucumber-js --format junit:results.xml
+      - name: Install browsers/drivers based on automation stack
+        run: |
+          if [ "${{ env.AUTOMATION_STACK }}" == "playwright-typescript" ] || [ "${{ env.AUTOMATION_STACK }}" == "webdriverio-typescript" ]; then
+            npx playwright install --with-deps
+          elif [ "${{ env.AUTOMATION_STACK }}" == "selenium-java" ]; then
+            # Selenium Java typically handles drivers automatically
+            echo "Selenium Java drivers will be managed automatically"
+          fi
+
+      - name: Run tests based on automation stack
+        run: |
+          if [ "${{ env.AUTOMATION_STACK }}" == "playwright-java" ] || [ "${{ env.AUTOMATION_STACK }}" == "selenium-java" ]; then
+            # Java projects use Maven
+            if [ -f "pom.xml" ]; then
+              mvn test
+            else
+              echo "Error: pom.xml not found. Java tests cannot run."
+              exit 1
+            fi
+          elif [ "${{ env.AUTOMATION_STACK }}" == "webdriverio-typescript" ]; then
+            # WebDriverIO projects
+            npx wdio run wdio.conf.js
+          else
+            # Default to Playwright TypeScript
+            npx cucumber-js --format junit:results.xml
+          fi
 
       - name: Commit and Push Generated Scripts
         if: steps.detect.outputs.changed_files != ''
