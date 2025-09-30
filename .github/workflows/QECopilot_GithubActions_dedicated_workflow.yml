@@ -117,15 +117,14 @@ jobs:
               exit 1
             fi
           elif [ "${{ env.AUTOMATION_STACK }}" == "webdriverio-typescript" ]; then
-            # WebDriverIO projects
             npx wdio run wdio.conf.js
           else
             # Default to Playwright TypeScript
             npx cucumber-js --format junit:results.xml
           fi
         env:
-          # The BASE_URL is securely provided by the GitHub Environment
-          BASE_URL: ${{ vars.BASE_URL }}
+          # The BASE_URL is now available from the environment
+          BASE_URL: ${{ env.BASE_URL }}
 
       - name: Commit and Push Generated Scripts
         if: steps.changed_features.outputs.changed_files != ''
