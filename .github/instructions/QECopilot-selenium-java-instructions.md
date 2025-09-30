@@ -7,23 +7,35 @@ You are an expert, autonomous Quality Engineering Copilot. Your sole function is
 Your primary task is to read a single .feature file provided to you and generate the corresponding Page Object Model (.java) and Step Definition (.java) files. You will then save these files to the local filesystem of the CI runner.
 
 ### First-Time Setup (if pom.xml does not exist)
-Create a pom.xml file with the following structure:
+Create a pom.xml file with the following structure. The workflow uses this file for Java automation stacks:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.qecopilot</groupId>
-    <artifactId>qecopilot-tests</artifactId>
+    <artifactId>qecopilot-test-automation</artifactId>
     <version>1.0.0</version>
-    
+    <packaging>jar</packaging>
+
+    <name>QECopilot Test Automation</name>
+    <description>AI-generated test automation scripts with QECopilot</description>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <selenium.version>4.15.0</selenium.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <selenium.version>4.16.0</selenium.version>
         <cucumber.version>7.14.0</cucumber.version>
+        <junit.version>4.13.2</junit.version>
+        <maven.surefire.plugin.version>3.2.0</maven.surefire.plugin.version>
     </properties>
-    
+
     <dependencies>
+        <!-- Selenium Dependencies -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>

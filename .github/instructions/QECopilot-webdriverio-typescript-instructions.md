@@ -7,35 +7,137 @@ You are an expert, autonomous Quality Engineering Copilot. Your sole function is
 Your primary task is to read a single .feature file provided to you and generate the corresponding Page Object Model (.page.ts) and Step Definition (.steps.ts) files. You will then save these files to the local filesystem of the CI runner.
 
 ### First-Time Setup (if package.json does not exist)
-Create a package.json file with the following structure:
+Create a minimal package.json file. Dependencies are installed dynamically by the workflow based on the automation stack:
 ```json
 {
-  "name": "qecopilot-tests",
+  "name": "qecopilot-test-at-speed-of-ai",
   "version": "1.0.0",
-  "dependencies": {
-    "@wdio/cli": "^8.24.0",
-    "@wdio/local-runner": "^8.24.0",
-    "@wdio/mocha-framework": "^8.24.0",
-    "@wdio/spec-reporter": "^8.24.0",
-    "@wdio/cucumber-framework": "^8.24.0",
-    "@cucumber/cucumber": "^10.3.0",
-    "webdriverio": "^8.24.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.0",
-    "ts-node": "^10.9.0"
-  },
+  "description": "QECopilot test automation project with AI-generated test scripts",
+  "main": "index.js",
   "scripts": {
-    "test": "wdio run wdio.conf.ts"
-  }
+    "build": "echo 'Build completed'",
+    "test": "npx cucumber-js",
+    "test:wdio": "npx wdio run wdio.conf.js"
+  },
+  "keywords": [
+    "qecopilot",
+    "test-automation",
+    "webdriverio",
+    "cucumber",
+    "ai"
+  ],
+  "author": "QECopilot",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
 }
 ```
 
+**Note:** The workflow automatically installs the required dependencies (`@wdio/cli`, `@wdio/cucumber-framework`, `@wdio/local-runner`, `@wdio/spec-reporter`, `@wdio/junit-reporter`, `@cucumber/cucumber`, `typescript`, `@types/node`) based on the `AUTOMATION_STACK` environment variable.
+
 ### Subsequent Runs (if package.json exists)
-- Check if WebdriverIO dependencies are present in package.json
+- Check if WebDriverIO dependencies are present in package.json
 - If present, proceed directly to generating test scripts
 - Do not modify existing package.json
+
+## 3. Meta-Instructions & Guardrails (CRITICAL)
+
+**DO NOT:**
+- Run npm install, execute tests, or interact with git
+
+## 4. File Generation Instructions
+
+### Generate Page Object Model (.page.ts)
+Create a page object file in the `pages/` directory with the following structure:
+```typescript
+import { Page } from 'playwright';
+
+export class LoginPage {
+    private page: Page;
+
+    constructor(page: Page) {
+        this.page = page;
+    }
+
+    // Locators
+    usernameInput = () => this.page.locator('#username');
+    passwordInput = () => this.page.locator('#password');
+    loginButton = () => this.page.locator('button[type="submit"]');
+
+    // Actions
+    async navigate() {
+        await this.page.goto('https://the-internet.herokuapp.com/login');
+    }
+
+    async login(username: string, password: string) {
+        await this.usernameInput().fill(username);
+        await this.passwordInput().fill(password);
+        await this.loginButton().click();
+    }
+}
+```
+
+### Generate Step Definition (.steps.ts)
+Create a step definition file in the `steps/` directory with the following structure:
+```typescript
+import { Given, When, Then } from '@cucumber/cucumber';
+import { expect } from '@playwright/test';
+import { LoginPage } from '../pages/login.page';
+
+let loginPage: LoginPage;
+
+Given('I am on the login page', async function () {
+    loginPage = new LoginPage(this.page);
+    await loginPage.navigate();
+});
+
+When('I enter username {string} and password {string}', async function (username: string, password: string) {
+    await loginPage.login(username, password);
+});
+
+When('I click the login button', async function () {
+    // Login is already handled in the previous step
+});
+
+Then('I should be redirected to the secure area', async function () {
+    await expect(this.page).toHaveURL(/.*/secure/);
+});
+
+Then('I should see a success message {string}', async function (message: string) {
+    const successMessage = this.page.locator('#flash');
+    await expect(successMessage).toContainText(message);
+});
+
+Then('I should see a logout button', async function () {
+    const logoutButton = this.page.locator('a.button[href="/logout"]');
+    await expect(logoutButton).toBeVisible();
+});
+```
+
+## 5. Configuration Files
+
+### wdio.conf.js (if not exists)
+Create a WebdriverIO configuration file:
+```javascript
+module.exports = {
+    specs: ['./features/**/*.feature'],
+    framework: 'cucumber',
+    reporters: ['spec'],
+    
+    cucumberOpts: {
+        requireModule: ['ts-node/register'],
+        require: ['./steps/**/*.ts'],
+        format: ['progress'],
+    },
+    
+    capabilities: [{
+        browserName: 'chrome',
+        'cucumberOpts': {
+            require: ['./steps/**/*.ts'],
+        }
+    }]
+};
+```
 
 ## 3. Meta-Instructions & Guardrails (CRITICAL)
 

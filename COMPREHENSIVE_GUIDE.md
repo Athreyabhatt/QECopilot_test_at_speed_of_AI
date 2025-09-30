@@ -26,6 +26,7 @@ QECopilot uses GitHub Copilot CLI to autonomously generate test automation code,
 - **🔒 Secure** - Uses GitHub's native authentication, no external API keys
 - **🎯 Context-Aware** - Understands repository structure and coding patterns
 - **⚡ Fast** - Runs in parallel with your CI/CD pipeline
+- **🚀 Optimized Dependencies** - Dynamic dependency installation based on automation stack for maximum efficiency
 - **🔧 Customizable** - Modify instructions to match your coding standards
 - **🛠️ Framework Agnostic** - Supports multiple automation tools and languages
 
@@ -120,6 +121,60 @@ AUTOMATION_STACK: selenium-java
 
 # Option 4: WebdriverIO + TypeScript (For mobile testing)
 AUTOMATION_STACK: webdriverio-typescript
+```
+
+## 🔄 Dynamic Dependency Installation
+
+### How It Works
+
+The GitHub Actions workflows use **dynamic dependency installation** to optimize build performance and resource usage. Instead of installing all possible dependencies, the system only installs what's needed for your chosen automation stack.
+
+### Benefits
+
+- **🚀 Faster Builds**: Only install dependencies required for your specific automation stack
+- **💰 Reduced Costs**: Minimize GitHub Actions minutes and resource usage
+- **🧹 Clean Dependencies**: Maintain lean package.json/pom.xml files without bloat
+- **🎯 Stack-Specific**: Each automation stack gets exactly the dependencies it needs
+- **⚡ Efficient Scaling**: Handle high-volume testing without unnecessary overhead
+
+### Implementation
+
+The workflows use conditional logic to install dependencies based on the `AUTOMATION_STACK` variable:
+
+```yaml
+- name: Install Dependencies
+  run: |
+    if [ "${{ env.AUTOMATION_STACK }}" = "playwright-typescript" ]; then
+      npm install @playwright/test @cucumber/cucumber typescript @types/node
+    elif [ "${{ env.AUTOMATION_STACK }}" = "webdriverio-typescript" ]; then
+      npm install @wdio/cli @wdio/cucumber-framework @wdio/local-runner @wdio/spec-reporter @cucumber/cucumber typescript @types/node
+    elif [ "${{ env.AUTOMATION_STACK }}" = "playwright-java" ] || [ "${{ env.AUTOMATION_STACK }}" = "selenium-java" ]; then
+      mvn install
+    fi
+```
+
+### Minimal Configuration Templates
+
+The system uses minimal package.json/pom.xml templates that are populated with stack-specific dependencies during runtime:
+
+**package.json (Node.js stacks):**
+```json
+{
+  "name": "qecopilot-test-at-speed-of-ai",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {}
+}
+```
+
+**pom.xml (Java stacks):**
+```xml
+<project>
+    <groupId>com.qecopilot</groupId>
+    <artifactId>qecopilot-test-automation</artifactId>
+    <version>1.0.0</version>
+    <!-- Dependencies added dynamically by workflow -->
+</project>
 ```
 
 ## 🔄 Dynamic Instruction File Selection
