@@ -61,18 +61,7 @@ jobs:
             FEATURE_CONTENT=$(cat "$file")
             INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
             
-            copilot -p "You are a test automation code generator.
-
-Feature File:
-$FEATURE_CONTENT
-
-Instructions:
-$INSTRUCTIONS
-
-Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." \
-            --allow-tool 'write' \
-            --deny-tool 'shell(rm)' \
-            --deny-tool 'shell(git push)'
+            copilot -p "You are a test automation code generator. Feature File: $FEATURE_CONTENT Instructions: $INSTRUCTIONS Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool 'write' --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
           done
 
       - name: Build the application locally
