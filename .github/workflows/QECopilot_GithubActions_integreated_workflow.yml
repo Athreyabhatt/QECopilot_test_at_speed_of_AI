@@ -1,14 +1,20 @@
 #======================================================================================
 # WORKFLOW FOR SCENARIO 1: INTEGRATED DEV & QA TEAM
-# Trigger: On Pull Request to `main`.
-# Action: Builds the app locally, runs AI-generated tests against the local build.
+# Trigger: On Pull Request to `main` (created by dev or QE) when QE engineers modify feature files.
+# Action: QE engineers create/update .feature files → QECopilot generates test scripts → Run tests locally.
 #======================================================================================
 name: 'QECopilot: Integrated Team CI'
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - 'main'
+    paths:
+      - 'features/**' # Trigger when any .feature files are changed
+      - '.github/instructions/**' # Trigger when copilot instructions change
+      - '.github/workflows/QECopilot_GithubActions_integreated_workflow.yml' # Trigger when this workflow changes
+  workflow_dispatch: # Allow manual triggering of the workflow
 
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
