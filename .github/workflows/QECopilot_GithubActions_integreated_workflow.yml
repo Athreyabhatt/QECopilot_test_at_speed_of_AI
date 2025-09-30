@@ -1,0 +1,96 @@
+#======================================================================================
+# WORKFLOW FOR SCENARIO 1: INTEGRATED DEV & QA TEAM
+# Trigger: On Pull Request to `main`.
+# Action: Builds the app locally, runs AI-generated tests against the local build.
+#======================================================================================
+name: 'QECopilot: Integrated Team CI'
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
+  AUTOMATION_STACK: playwright-typescript
+
+jobs:
+  generate_and_test_locally:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important: Allows the Action to push code back to the PR branch
+
+    steps:
+      - name: Checkout repository with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed for git diff to work correctly
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Detect changed feature files
+        run: |
+          # Compares the PR branch HEAD with the base branch (main)
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '.feature$' || echo "")
+          echo "changed_files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Install GitHub Copilot CLI
+        run: npm install -g @github/copilot
+
+      - name: Authenticate Copilot CLI
+        run: |
+          # Use GitHub token for authentication
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          copilot /login
+
+      - name: Invoke Copilot Agent to Generate Scripts
+        if: steps.changed_features.outputs.changed_files != ''
+        run: |
+          echo "QECopilot activated for the following files:"
+          echo "${{ steps.changed_features.outputs.changed_files }}"
+          for file in ${{ steps.changed_features.outputs.changed_files }}; do
+            FEATURE_CONTENT=$(cat "$file")
+            INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
+            
+            copilot -p "You are a test automation code generator.
+
+Feature File:
+$FEATURE_CONTENT
+
+Instructions:
+$INSTRUCTIONS
+
+Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." \
+            --allow-tool 'write' \
+            --deny-tool 'shell(rm)' \
+            --deny-tool 'shell(git push)'
+          done
+
+      - name: Build the application locally
+        run: npm run build # Assumes a standard build script exists in package.json
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests against local build
+        run: npx cucumber-js --format junit:results.xml
+
+      - name: Commit and Push Generated Scripts
+        if: steps.changed_features.outputs.changed_files != ''
+        run: |
+          git config --global user.name 'QECopilot Bot'
+          git config --global user.email 'actions@github.com'
+          git add .
+          # Check if there are any changes to commit
+          if git diff-index --quiet HEAD; then
+            echo "No new test scripts were generated. Nothing to commit."
+          else
+            git commit -m "feat(ai): Generate test scripts for updated features [skip ci]"
+            git push
+          fi
