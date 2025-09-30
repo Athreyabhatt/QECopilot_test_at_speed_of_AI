@@ -36,8 +36,8 @@ Create a minimal package.json file. Dependencies are installed dynamically by th
 **Note:** The workflow automatically installs the required dependencies (`@playwright/test`, `@cucumber/cucumber`, `typescript`, `@types/node`) based on the `AUTOMATION_STACK` environment variable.
 
 ### Subsequent Runs (if package.json exists)
-- Check if Playwright dependencies are present in package.json
-- If present, proceed directly to generating test scripts
+- Proceed directly to generating test scripts
+- The workflow handles dependency installation dynamically based on the AUTOMATION_STACK
 - Do not modify existing package.json
 
 ## 3. Meta-Instructions & Guardrails (CRITICAL)
