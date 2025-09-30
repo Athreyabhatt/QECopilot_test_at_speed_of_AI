@@ -77,7 +77,7 @@ jobs:
         run: |
           # Use GitHub token for authentication
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-          copilot /login
+          copilot login --github-token $GITHUB_TOKEN
 
       - name: Invoke Copilot Agent to Generate Scripts
         if: steps.changed_features.outputs.changed_files != ''
@@ -87,7 +87,7 @@ jobs:
             FEATURE_CONTENT=$(cat "$file")
             INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
             
-            copilot -p "You are a test automation code generator. Feature File: $(cat "$file") Instructions: $(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md) Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool 'write' --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
+            copilot --prompt "You are a test automation code generator. Feature File: $(cat "$file") Instructions: $(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md) Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool write --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
           done
 
       - name: Setup Java environment (if needed)
