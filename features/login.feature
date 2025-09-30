@@ -1,3 +1,4 @@
+# Updated for GitHub Actions testing
 Feature: User Login Functionality
 
   As a user of the-internet.herokuapp.com
