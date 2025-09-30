@@ -135,17 +135,24 @@ See [.github/instructions/README.md](.github/instructions/README.md) for detaile
 
 ## 📖 Table of Contents
 
-- [What is QECopilot?](#-what-is-qecopilot)
-- [Repository Structure](#-repository-structure-configuration-only)
+- [Complete Documentation](#-complete-documentation)
+- [Quick Overview](#-quick-overview)
+- [Repository Structure](#-repository-structure)
 - [Key Features](#-key-features)
 - [How It Works](#-how-it-works)
-- [Quick Start](#️-quick-start)
-- [Implementation Details](#-implementation-details)
+- [Quick Start](#-quick-start)
+- [Supported Automation Stacks](#-supported-automation-stacks)
 - [Use Cases](#-use-cases)
 - [Customization](#-customization)
 - [Security](#-security)
-- [Troubleshooting](#-troubleshooting)
+- [Benefits](#-benefits)
+- [Example Feature File](#-example-feature-file)
+- [Implementation Details](#-implementation-details)
 - [Agent Instructions](#-agent-instructions)
+- [Troubleshooting](#-troubleshooting)
+- [Support](#-support)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ## 🎯 Use Cases
 
