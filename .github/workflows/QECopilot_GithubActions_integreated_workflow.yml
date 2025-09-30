@@ -19,7 +19,6 @@ on:
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
   AUTOMATION_STACK: playwright-typescript
-
 jobs:
   generate_and_test_locally:
     runs-on: ubuntu-latest
