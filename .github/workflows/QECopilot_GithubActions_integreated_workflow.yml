@@ -9,6 +9,11 @@ on:
   pull_request:
     branches:
       - 'main'
+    paths:
+      - 'features/**' # Only trigger if feature files are changed
+      - '.github/workflows/**' # Also trigger if workflow files are changed
+      - '.github/instructions/**' # Also trigger if instructions are changed
+  workflow_dispatch: # Allow manual triggering of the workflow
 
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
