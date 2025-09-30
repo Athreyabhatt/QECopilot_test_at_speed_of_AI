@@ -1,0 +1,29 @@
+{
+  "name": "qecopilot-test-at-speed-of-ai",
+  "version": "1.0.0",
+  "description": "QECopilot test automation project with AI-generated test scripts",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Build completed'",
+    "test": "npx cucumber-js",
+    "test:playwright": "npx cucumber-js --format junit:results.xml"
+  },
+  "keywords": [
+    "qecopilot",
+    "test-automation",
+    "playwright",
+    "cucumber",
+    "ai"
+  ],
+  "author": "QECopilot",
+  "license": "MIT",
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "@cucumber/cucumber": "^10.3.0",
+    "@github/copilot": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0"
+  }
+}
