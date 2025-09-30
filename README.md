@@ -415,3 +415,5 @@ MIT License - See LICENSE file for details
 ---
 
 **Ready to get started?** Copy the `.github/` directory to your project and let Copilot generate your test automation code automatically! 🚀
+#   Q E C o p i l o t   w o r k f l o w   t e s t   t r i g g e r  
+ 
