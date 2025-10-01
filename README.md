@@ -29,6 +29,9 @@ QECopilot_test_at_speed_of_AI/
 │   ├── workflows/
 │   │   ├── QECopilot_GithubActions_integreated_workflow.yml
 │   │   └── QECopilot_GithubActions_dedicated_workflow.yml
+│   ├── scripts/
+│   │   ├── generate-with-openai.js      # OpenAI API integration script
+│   │   └── generate-with-claude.js      # Anthropic Claude API integration script
 │   └── instructions/
 │       ├── QECopilot-playwright-typescript-instructions.md
 │       ├── QECopilot-playwright-java-instructions.md
@@ -84,6 +87,7 @@ QECopilot_test_at_speed_of_AI/
    ```
    This includes:
    - Workflow files in `.github/workflows/`
+   - LLM provider scripts in `.github/scripts/`
    - Instructions files in `.github/instructions/`
 
 2. **Configure repository variables** in GitHub Settings:

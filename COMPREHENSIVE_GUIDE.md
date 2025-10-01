@@ -50,6 +50,9 @@ Your Project/
 │   ├── workflows/
 │   │   ├── QECopilot_GithubActions_integreated_workflow.yml
 │   │   └── QECopilot_GithubActions_dedicated_workflow.yml
+│   ├── scripts/
+│   │   ├── generate-with-openai.js      # OpenAI API integration script
+│   │   └── generate-with-claude.js      # Anthropic Claude API integration script
 │   └── instructions/
 │       ├── QECopilot-playwright-typescript-instructions.md
 │       ├── QECopilot-playwright-java-instructions.md
