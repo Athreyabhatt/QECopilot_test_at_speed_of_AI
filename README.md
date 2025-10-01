@@ -9,7 +9,7 @@ For comprehensive setup instructions, framework selection, and usage guide, see:
 
 ## 🚀 Quick Overview
 
-QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using GitHub Copilot in autonomous agent mode. It runs directly in your GitHub Actions CI/CD pipeline.
+QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, or Anthropic Claude). It runs directly in your GitHub Actions CI/CD pipeline.
 
 ### Key Benefits
 - **80-95% reduction** in test scripting time
@@ -18,6 +18,8 @@ QECopilot is an AI-powered system that automatically generates test automation s
 - **Continuous testing** at development speed
 - **Framework agnostic** - Works with Playwright, Selenium, WebdriverIO
 - **QE-led testing** - Quality Engineers create feature files with testing expertise
+- **Configurable LLM providers** - Choose between Copilot, OpenAI, or Claude
+- **Repository-based configuration** - No code changes needed to switch providers
 
 ## 📁 Repository Structure
 
@@ -43,11 +45,13 @@ QECopilot_test_at_speed_of_AI/
 
 ## ✨ Key Features
 
-- **🤖 Autonomous Generation** - Copilot CLI generates test code without manual approval
+- **🤖 Autonomous Generation** - Configurable LLM providers generate test code without manual approval
 - **📦 Smart Setup** - Creates package.json/pom.xml on first run, skips on subsequent runs
-- **🔒 Secure** - Uses GitHub's native authentication, no external API keys
+- **🔒 Secure** - Uses GitHub's native authentication and secrets management
 - **🎯 Context-Aware** - Understands repository structure and coding patterns
 - **⚡ Fast** - Runs in parallel with your CI/CD pipeline
+- **🔄 Provider Flexibility** - Switch between Copilot, OpenAI, and Claude without code changes
+- **⚙️ Repository Configuration** - Configure settings through GitHub UI, not workflow files
 - **🔧 Customizable** - Modify instructions to match your coding standards
 - **🛠️ Framework Agnostic** - Supports multiple automation tools and languages
 - **🚀 Optimized Dependencies** - Only install required dependencies for your chosen stack
@@ -57,8 +61,8 @@ QECopilot_test_at_speed_of_AI/
 1. **Quality Engineer** creates/modifies a Gherkin feature file
 2. **Developer/QE** opens a Pull Request
 3. **GitHub Actions** triggers the workflow
-4. **Copilot CLI** reads the feature file and instructions
-5. **Copilot Agent** generates Page Object and Step Definition files
+4. **Configured LLM Provider** (Copilot/OpenAI/Claude) reads the feature file and instructions
+5. **LLM generates** Page Object and Step Definition files
 6. **Workflow** installs dependencies and runs tests
 7. **Bot** commits generated files back to the PR
 
@@ -66,7 +70,9 @@ QECopilot_test_at_speed_of_AI/
 
 ### Prerequisites
 
-- GitHub Copilot subscription
+- **For Copilot**: GitHub Copilot subscription
+- **For OpenAI**: OpenAI API key
+- **For Claude**: Anthropic API key
 - GitHub repository with Actions enabled
 - Node.js 18+
 
@@ -80,19 +86,26 @@ QECopilot_test_at_speed_of_AI/
    - Workflow files in `.github/workflows/`
    - Instructions files in `.github/instructions/`
 
-2. **Choose your automation stack** by editing the workflow file:
-   ```yaml
-   env:
-     # Options: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
-     AUTOMATION_STACK: playwright-typescript
+2. **Configure repository variables** in GitHub Settings:
+   Go to **Settings → Secrets and variables → Actions → Variables**
+   ```
+   AUTOMATION_STACK = playwright-typescript  # Options: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
+   LLM_PROVIDER = copilot                   # Options: copilot, openai, claude
    ```
 
-3. **Create** `features/` directory
+3. **Configure repository secrets** (if using OpenAI or Claude):
+   Go to **Settings → Secrets and variables → Actions → Secrets**
+   ```
+   OPENAI_API_KEY = your_openai_api_key      # Required for OpenAI
+   ANTHROPIC_API_KEY = your_anthropic_api_key # Required for Claude
+   ```
+
+4. **Create** `features/` directory
    ```bash
    mkdir your-repo/features
    ```
 
-4. **Add** your first `.feature` file
+5. **Add** your first `.feature` file
    ```gherkin
    # your-repo/features/login.feature
    Feature: User Login
@@ -102,7 +115,7 @@ QECopilot_test_at_speed_of_AI/
        Then I should see the dashboard
    ```
 
-5. **Open** a Pull Request and watch the magic happen! ✨
+6. **Open** a Pull Request and watch the magic happen! ✨
 
 ## 🛠️ Supported Automation Stacks
 
@@ -117,11 +130,10 @@ QECopilot supports multiple automation frameworks and languages:
 
 ### Choosing Your Stack
 
-Edit the `AUTOMATION_STACK` environment variable in your workflow file:
+Set the `AUTOMATION_STACK` repository variable in GitHub Settings:
 
-```yaml
-env:
-  AUTOMATION_STACK: playwright-typescript  # Change this to your preferred stack
+```
+AUTOMATION_STACK = playwright-typescript  # Options: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
 ```
 
 Each stack has its own instruction file in `.github/instructions/` that defines:
@@ -132,6 +144,30 @@ Each stack has its own instruction file in `.github/instructions/` that defines:
 - Assertion libraries
 
 See [.github/instructions/README.md](.github/instructions/README.md) for detailed information about each stack.
+
+## 🤖 Supported LLM Providers
+
+QECopilot supports multiple Large Language Model providers for generating test automation code:
+
+| Provider | Model | Authentication | Best For |
+|----------|-------|----------------|----------|
+| **copilot** | GitHub Copilot | GitHub Token | Seamless GitHub integration, no external API keys needed |
+| **openai** | GPT-4 | API Key | High-quality code generation, advanced reasoning |
+| **claude** | Claude 3 | API Key | Natural language understanding, context-aware generation |
+
+### Choosing Your LLM Provider
+
+Set the `LLM_PROVIDER` repository variable in GitHub Settings:
+
+```
+LLM_PROVIDER = copilot  # Options: copilot, openai, claude
+```
+
+### Provider Setup
+
+- **Copilot**: Requires GitHub Copilot subscription. Uses GitHub's native authentication.
+- **OpenAI**: Requires OpenAI API key. Add as repository secret `OPENAI_API_KEY`.
+- **Claude**: Requires Anthropic API key. Add as repository secret `ANTHROPIC_API_KEY`.
 
 ## 🚀 Dynamic Dependency Installation
 

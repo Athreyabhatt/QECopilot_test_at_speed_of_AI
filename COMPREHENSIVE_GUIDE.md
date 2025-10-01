@@ -4,7 +4,7 @@
 
 ## 🚀 What is QECopilot?
 
-QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using GitHub Copilot in autonomous agent mode. It runs directly in your GitHub Actions CI/CD pipeline.
+QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, or Anthropic Claude). It runs directly in your GitHub Actions CI/CD pipeline.
 
 ### The Problem
 - Development teams move at AI-fueled speed
@@ -12,7 +12,7 @@ QECopilot is an AI-powered system that automatically generates test automation s
 - Manual test scripting is time-consuming
 
 ### The Solution
-QECopilot uses GitHub Copilot CLI to autonomously generate test automation code, enabling:
+QECopilot uses configurable LLM providers to autonomously generate test automation code, enabling:
 - **80% reduction** in test scripting time
 - **Instant test generation** from feature files
 - **Zero manual coding** for test automation
@@ -21,11 +21,13 @@ QECopilot uses GitHub Copilot CLI to autonomously generate test automation code,
 
 ## ✨ Key Features
 
-- **🤖 Autonomous Generation** - Copilot CLI generates test code without manual approval
+- **🤖 Autonomous Generation** - Configurable LLM providers generate test code without manual approval
 - **📦 Smart Setup** - Creates package.json/pom.xml on first run, skips on subsequent runs
-- **🔒 Secure** - Uses GitHub's native authentication, no external API keys
+- **🔒 Secure** - Uses GitHub's native authentication and secrets management
 - **🎯 Context-Aware** - Understands repository structure and coding patterns
 - **⚡ Fast** - Runs in parallel with your CI/CD pipeline
+- **🔄 Provider Flexibility** - Switch between Copilot, OpenAI, and Claude without code changes
+- **⚙️ Repository Configuration** - Configure settings through GitHub UI, not workflow files
 - **🔧 Customizable** - Modify instructions to match your coding standards
 - **🛠️ Framework Agnostic** - Supports multiple automation tools and languages
 - **🚀 Optimized Dependencies** - Only install required dependencies for your chosen stack
@@ -34,8 +36,8 @@ QECopilot uses GitHub Copilot CLI to autonomously generate test automation code,
 
 1. **Quality Engineer** creates/modifies a Gherkin feature file with testing expertise
 2. **PR Creation** triggers the GitHub Actions workflow
-3. **Copilot Agent** reads the feature file and framework-specific instructions
-4. **Code Generation** - Copilot generates test automation scripts
+3. **Configured LLM Provider** reads the feature file and framework-specific instructions
+4. **Code Generation** - LLM generates test automation scripts
 5. **Test Execution** - Runs the generated tests against your application
 6. **Auto-Commit** - Commits generated scripts back to the PR branch
 7. **PR Status** - Shows test results and generated code
@@ -127,16 +129,17 @@ AUTOMATION_STACK: webdriverio-typescript
 
 ### How It Works
 
-The GitHub Actions workflows **automatically** select the correct instruction file based on the `AUTOMATION_STACK` environment variable.
+The GitHub Actions workflows **automatically** select the correct instruction file based on the `AUTOMATION_STACK` repository variable.
 
 ### Flow Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  1. Quality Engineer Sets Automation Stack in Workflow             │
+│  1. Quality Engineer Sets Configuration via Repository Variables       │
 │                                                              │
-│  env:                                                        │
+│  GitHub Settings → Secrets and variables → Actions → Variables:      │
 │    AUTOMATION_STACK: playwright-typescript                  │
+│    LLM_PROVIDER: copilot                                     │
 └──────────────────────┬──────────────────────────────────────┘
                        │
                        ▼
@@ -160,33 +163,26 @@ The GitHub Actions workflows **automatically** select the correct instruction fi
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  4. Copilot Reads Framework-Specific Instructions            │
+│  4. Configured LLM Provider Reads Instructions               │
 │                                                              │
-│  copilot -p "Feature: $FEATURE_CONTENT                      │
-│             Instructions: $INSTRUCTIONS"                     │
+│  if LLM_PROVIDER == "copilot":                               │
+│    copilot -p "Feature: $FEATURE_CONTENT                     │
+│               Instructions: $INSTRUCTIONS"                   │
+│  elif LLM_PROVIDER == "openai":                             │
+│    node generate-with-openai.js $FEATURE_FILE $INSTRUCTIONS  │
+│  elif LLM_PROVIDER == "claude":                             │
+│    node generate-with-claude.js $FEATURE_FILE $INSTRUCTIONS  │
 └──────────────────────┬──────────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  5. Copilot Generates Code for Selected Framework           │
+│  5. LLM Generates Code for Selected Framework                │
 │                                                              │
 │  If playwright-typescript → .page.ts with Playwright API    │
 │  If playwright-java → .java with Playwright Java API        │
 │  If selenium-java → .java with Selenium WebDriver API       │
 │  If webdriverio-typescript → .page.ts with WebdriverIO API  │
 └─────────────────────────────────────────────────────────────┘
-```
-
-### Example: Dynamic Path Construction
-
-```yaml
-- name: Invoke Copilot Agent to Generate Scripts
-  run: |
-    # This line dynamically builds the path based on AUTOMATION_STACK
-    INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
-    
-    copilot -p "Instructions: $INSTRUCTIONS
-    Feature: ${{ steps.read-feature.outputs.content }}"
 ```
 
 ### Result: Automatic Framework Selection
@@ -207,9 +203,10 @@ The GitHub Actions workflows **automatically** select the correct instruction fi
 
 ### Cost to Run QECopilot
 
-**Monthly Cost: ~$20-30**
+**Monthly Cost: Varies by LLM Provider**
 
-Breakdown:
+#### Option 1: GitHub Copilot (Recommended)
+**Monthly Cost: ~$20-30**
 - **GitHub Copilot Subscription**: $10-19/month
   - Individual: $10/month
   - Business: $19/month per user
@@ -219,30 +216,62 @@ Breakdown:
   - Additional: $0.008/minute
   - Typical usage: ~$5-10/month
 
-**What's Included:**
+#### Option 2: OpenAI API
+**Monthly Cost: ~$15-50+**
+- **OpenAI API Usage**: $10-40/month
+  - GPT-4: ~$0.03-0.06 per 1K tokens
+  - Typical test generation: ~$0.10-0.50 per feature file
+  - Volume depends on testing needs
+- **GitHub Actions Minutes**: $5-10/month
+
+#### Option 3: Anthropic Claude
+**Monthly Cost: ~$15-45+**
+- **Anthropic API Usage**: $10-35/month
+  - Claude 3: ~$0.015-0.03 per 1K tokens
+  - Typical test generation: ~$0.08-0.40 per feature file
+  - Volume depends on testing needs
+- **GitHub Actions Minutes**: $5-10/month
+
+**What's Included (All Providers):**
 - ✅ 24/7 availability
 - ✅ All frameworks (Playwright, Selenium, WebdriverIO)
 - ✅ Unlimited test generation
-- ✅ No LLM API costs (uses GitHub Copilot)
 - ✅ No infrastructure costs
 - ✅ No maintenance costs
 - ✅ Zero training costs
 - ✅ Framework switching at no additional cost
+- ✅ Provider switching at no additional cost
 
-**Annual Cost:**
+**Annual Cost Estimates:**
 ```
-Individual Plan:    $180-240/year
-Business Plan:      $300-360/year per user
-Enterprise Plan:    $540-600/year per user
+Copilot Individual:   $180-240/year
+Copilot Business:     $300-360/year per user
+OpenAI (moderate use): $180-600/year
+Claude (moderate use): $180-540/year
 ```
 
 ## 🔐 Security
 
+### GitHub Copilot Provider
 - ✅ Uses GitHub's native `GITHUB_TOKEN`
 - ✅ Granular tool permissions (`--allow-tool`, `--deny-tool`)
 - ✅ No external API keys required
 - ✅ Runs in isolated GitHub Actions environment
 - ✅ All changes require PR review before merge
+
+### OpenAI & Claude Providers
+- ✅ API keys stored as GitHub repository secrets
+- ✅ Secure secret management with encryption
+- ✅ Access restricted to repository workflows
+- ✅ Runs in isolated GitHub Actions environment
+- ✅ All changes require PR review before merge
+- ✅ No external API exposure
+
+### Common Security Features
+- ✅ No hardcoded credentials in workflow files
+- ✅ Audit trail through GitHub Actions logs
+- ✅ Repository-level access control
+- ✅ Temporary credentials with workflow scope
 
 ## 🧪 Example Feature File
 
@@ -328,8 +357,11 @@ QE ─────────┘
 ### Prerequisites
 
 1. **GitHub Repository** with GitHub Actions enabled
-2. **GitHub Copilot CLI** installed (if testing locally)
-3. **GitHub Copilot Subscription** (Individual, Business, or Enterprise)
+2. **LLM Provider Access**:
+   - **For Copilot**: GitHub Copilot subscription
+   - **For OpenAI**: OpenAI API key
+   - **For Claude**: Anthropic API key
+3. **Node.js 18+** (for OpenAI/Claude providers)
 
 ### Step 1: Copy Configuration Files
 
@@ -340,25 +372,40 @@ cp -r .github/ your-repo/
 cd your-repo
 ```
 
-### Step 2: Configure Your Automation Stack
+This includes:
+- Workflow files in `.github/workflows/`
+- Instruction files in `.github/instructions/`
+- API integration scripts in `.github/scripts/`
 
-Edit `.github/workflows/QECopilot_GithubActions_integreated_workflow.yml`:
+### Step 2: Configure Repository Variables
 
-```yaml
-env:
-  # Choose your automation stack
-  AUTOMATION_STACK: playwright-typescript  # Change this
-```
-
-### Step 3: Configure Repository Settings
+Configure your automation stack and LLM provider through GitHub UI:
 
 1. Go to your repository **Settings**
-2. Navigate to **Secrets and variables > Actions**
-3. Add repository secret `AI_API_KEY` (if needed)
-4. Go to **Settings > Actions > General**
-5. Under "Workflow permissions", select **"Read and write permissions"**
+2. Navigate to **Secrets and variables > Actions > Variables**
+3. Add the following variables:
+   ```
+   AUTOMATION_STACK = playwright-typescript  # Options: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
+   LLM_PROVIDER = copilot                   # Options: copilot, openai, claude
+   ```
 
-### Step 4: Create Your First Feature File
+### Step 3: Configure Repository Secrets (if using OpenAI or Claude)
+
+1. Go to your repository **Settings**
+2. Navigate to **Secrets and variables > Actions > Secrets**
+3. Add the required secrets based on your LLM provider:
+   ```
+   OPENAI_API_KEY = your_openai_api_key      # Required for OpenAI provider
+   ANTHROPIC_API_KEY = your_anthropic_api_key # Required for Claude provider
+   ```
+
+### Step 4: Configure Workflow Permissions
+
+1. Go to **Settings > Actions > General**
+2. Under "Workflow permissions", select **"Read and write permissions"**
+3. Check **"Allow GitHub Actions to create and approve pull requests"**
+
+### Step 5: Create Your First Feature File
 
 ```bash
 mkdir -p features
@@ -369,9 +416,8 @@ Feature: User Login
     When I enter valid credentials
     Then I should be signed in successfully
 EOF
-```
 
-### Step 5: Commit and Create PR
+### Step 6: Commit and Create PR
 
 ```bash
 git add .
@@ -381,19 +427,39 @@ git checkout -b feature/login-tests
 git push origin feature/login-tests
 ```
 
-Create a Pull Request and watch QECopilot in action!
+### Step 7: Open Pull Request
 
-## 🚀 Dynamic Dependency Installation
+1. Go to your repository on GitHub
+2. Create a pull request from your feature branch
+3. Watch as QECopilot automatically generates test automation scripts! ✨
 
-QECopilot implements intelligent dependency management to optimize CI/CD performance and resource usage. This is a key optimization that significantly reduces build times and costs.
+## 🤖 Choosing Your LLM Provider
 
-### Benefits
+### Provider Comparison
 
-- **Smart Installation**: Only install dependencies needed for your chosen automation stack
-- **Reduced Build Times**: Avoid installing unnecessary packages, reducing build times by 50-70%
-- **Resource Efficiency**: Minimize CI/CD costs by 40-60% through optimized resource usage
-- **Clean Dependencies**: Maintain lean package.json/pom.xml files with minimal configuration
-- **Scalable Performance**: Handle high-volume testing without performance degradation
+| Provider | Model | Cost | Setup Complexity | Best For |
+|----------|-------|------|------------------|----------|
+| **copilot** | GitHub Copilot | $10-19/month | Low | GitHub integration, no API keys |
+| **openai** | GPT-4 | Pay-per-use | Medium | High-quality code, advanced reasoning |
+| **claude** | Claude 3 | Pay-per-use | Medium | Natural language, context-aware |
+
+### Recommendation
+
+- **Start with Copilot**: Easiest setup, integrated with GitHub
+- **Try OpenAI**: If you need the highest code quality and have budget
+- **Consider Claude**: If you prefer natural language processing and cost efficiency
+
+### Switching Providers
+
+To switch between providers, simply update the `LLM_PROVIDER` repository variable:
+
+1. Go to **Settings → Secrets and variables → Actions → Variables**
+2. Change `LLM_PROVIDER` to your desired provider
+3. No workflow file changes needed!
+
+The next PR will automatically use the new provider.
+
+## 📦 Optimized Dependency Management
 
 ### How It Works
 

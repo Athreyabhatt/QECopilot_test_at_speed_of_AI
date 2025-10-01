@@ -28,7 +28,9 @@ on:
 
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
-  AUTOMATION_STACK: playwright-typescript
+  AUTOMATION_STACK: ${{ vars.AUTOMATION_STACK || 'playwright-typescript' }}
+  # Choose your LLM provider: copilot (default), openai, claude
+  LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'copilot' }}
 
 jobs:
   generate_and_test_non_prod:
@@ -63,30 +65,40 @@ jobs:
             # Default to Playwright TypeScript
             npm install @github/copilot @cucumber/cucumber @playwright/test typescript @types/node
           fi
-
       - name: Detect changed feature files
         id: changed_features
         run: |
           FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '.feature$' || echo "")
           echo "changed_files=$FILES" >> $GITHUB_OUTPUT
       - name: Install GitHub Copilot CLI
+        if: env.LLM_PROVIDER == 'copilot'
         run: npm install -g @github/copilot
 
       - name: Authenticate Copilot CLI
+        if: env.LLM_PROVIDER == 'copilot'
         run: |
           # Use GitHub token for authentication
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           copilot auth login --github-token $GITHUB_TOKEN
 
-      - name: Invoke Copilot Agent to Generate Scripts
+      - name: Generate Automation Scripts with ${{ env.LLM_PROVIDER }}
         if: steps.changed_features.outputs.changed_files != ''
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           echo "${{ steps.changed_features.outputs.changed_files }}"
           for file in ${{ steps.changed_features.outputs.changed_files }}; do
-            FEATURE_CONTENT=$(cat "$file")
-            INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md)
-            
-            copilot --prompt "You are a test automation code generator. Feature File: $(cat "$file") Instructions: $(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md) Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool write --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
+            if [ "${{ env.LLM_PROVIDER }}" == "copilot" ]; then
+              copilot --prompt "You are a test automation code generator. Feature File: $(cat "$file") Instructions: $(cat ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md) Task: Generate Page Object Model (.page.ts) and Step Definition (.steps.ts) files following the instructions. Write the files to pages/ and steps/ directories." --allow-tool write --deny-tool 'shell(rm)' --deny-tool 'shell(git push)'
+            elif [ "${{ env.LLM_PROVIDER }}" == "openai" ]; then
+              node ./.github/scripts/generate-with-openai.js "$file" ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md
+            elif [ "${{ env.LLM_PROVIDER }}" == "claude" ]; then
+              node ./.github/scripts/generate-with-claude.js "$file" ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md
+            else
+              echo "Error: Unknown LLM_PROVIDER '${{ env.LLM_PROVIDER }}'. Supported: copilot, openai, claude"
+              exit 1
+            fi
           done
 
       - name: Setup Java environment (if needed)
