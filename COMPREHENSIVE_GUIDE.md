@@ -4,7 +4,7 @@
 
 ## 🚀 What is QECopilot?
 
-QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, or Anthropic Claude). It runs directly in your GitHub Actions CI/CD pipeline.
+QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, Anthropic Claude, or Windsurf SWE). It runs directly in your GitHub Actions CI/CD pipeline.
 
 ### The Problem
 - Development teams move at AI-fueled speed
@@ -26,7 +26,7 @@ QECopilot uses configurable LLM providers to autonomously generate test automati
 - **🔒 Secure** - Uses GitHub's native authentication and secrets management
 - **🎯 Context-Aware** - Understands repository structure and coding patterns
 - **⚡ Fast** - Runs in parallel with your CI/CD pipeline
-- **🔄 Provider Flexibility** - Switch between Copilot, OpenAI, and Claude without code changes
+- **🔄 Provider Flexibility** - Switch between Copilot, OpenAI, Claude, and Windsurf SWE without code changes
 - **⚙️ Repository Configuration** - Configure settings through GitHub UI, not workflow files
 - **🔧 Customizable** - Modify instructions to match your coding standards
 - **🛠️ Framework Agnostic** - Supports multiple automation tools and languages
@@ -52,7 +52,8 @@ Your Project/
 │   │   └── QECopilot_GithubActions_dedicated_workflow.yml
 │   ├── scripts/
 │   │   ├── generate-with-openai.js      # OpenAI API integration script
-│   │   └── generate-with-claude.js      # Anthropic Claude API integration script
+│   │   ├── generate-with-claude.js      # Anthropic Claude API integration script
+│   │   └── generate-with-windsurf.js    # Windsurf SWE API integration script
 │   └── instructions/
 │       ├── QECopilot-playwright-typescript-instructions.md
 │       ├── QECopilot-playwright-java-instructions.md
@@ -235,6 +236,14 @@ The GitHub Actions workflows **automatically** select the correct instruction fi
   - Volume depends on testing needs
 - **GitHub Actions Minutes**: $5-10/month
 
+#### Option 4: Windsurf SWE
+**Monthly Cost: ~$20-60+**
+- **Windsurf SWE API Usage**: $15-50/month
+  - Windsurf SWE: ~$0.02-0.05 per 1K tokens (estimated)
+  - Typical test generation: ~$0.12-0.60 per feature file
+  - Volume depends on testing needs
+- **GitHub Actions Minutes**: $5-10/month
+
 **What's Included (All Providers):**
 - ✅ 24/7 availability
 - ✅ All frameworks (Playwright, Selenium, WebdriverIO)
@@ -251,6 +260,7 @@ Copilot Individual:   $180-240/year
 Copilot Business:     $300-360/year per user
 OpenAI (moderate use): $180-600/year
 Claude (moderate use): $180-540/year
+Windsurf (moderate use): $240-720/year
 ```
 
 ## 🔐 Security
@@ -262,7 +272,7 @@ Claude (moderate use): $180-540/year
 - ✅ Runs in isolated GitHub Actions environment
 - ✅ All changes require PR review before merge
 
-### OpenAI & Claude Providers
+### OpenAI, Claude & Windsurf SWE Providers
 - ✅ API keys stored as GitHub repository secrets
 - ✅ Secure secret management with encryption
 - ✅ Access restricted to repository workflows

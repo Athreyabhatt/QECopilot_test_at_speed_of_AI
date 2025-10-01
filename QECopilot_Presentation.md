@@ -33,6 +33,7 @@ QECopilot works with your preferred AI provider:
 -  GitHub Copilot (Seamless GitHub integration, no API keys needed)
 -  OpenAI GPT-4 (High-quality code generation, advanced reasoning)
 -  Anthropic Claude (Natural language understanding, context-aware)
+-  Windsurf SWE (Specialized software engineering AI, optimized for code generation)
 
 Simply configure your preferred stack and LLM provider, and the system generates framework-specific code automatically. No vendor lock-in, no framework limitations, no AI provider restrictions.
 

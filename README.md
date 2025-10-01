@@ -9,7 +9,7 @@ For comprehensive setup instructions, framework selection, and usage guide, see:
 
 ## 🚀 Quick Overview
 
-QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, or Anthropic Claude). It runs directly in your GitHub Actions CI/CD pipeline.
+QECopilot is an AI-powered system that automatically generates test automation scripts from Gherkin feature files using configurable LLM providers (GitHub Copilot, OpenAI, Anthropic Claude, or Windsurf SWE). It runs directly in your GitHub Actions CI/CD pipeline.
 
 ### Key Benefits
 - **80-95% reduction** in test scripting time
@@ -18,7 +18,7 @@ QECopilot is an AI-powered system that automatically generates test automation s
 - **Continuous testing** at development speed
 - **Framework agnostic** - Works with Playwright, Selenium, WebdriverIO
 - **QE-led testing** - Quality Engineers create feature files with testing expertise
-- **Configurable LLM providers** - Choose between Copilot, OpenAI, or Claude
+- **Configurable LLM providers** - Choose between Copilot, OpenAI, Claude, or Windsurf SWE
 - **Repository-based configuration** - No code changes needed to switch providers
 
 ## 📁 Repository Structure
@@ -31,7 +31,8 @@ QECopilot_test_at_speed_of_AI/
 │   │   └── QECopilot_GithubActions_dedicated_workflow.yml
 │   ├── scripts/
 │   │   ├── generate-with-openai.js      # OpenAI API integration script
-│   │   └── generate-with-claude.js      # Anthropic Claude API integration script
+│   │   ├── generate-with-claude.js      # Anthropic Claude API integration script
+│   │   └── generate-with-windsurf.js    # Windsurf SWE API integration script
 │   └── instructions/
 │       ├── QECopilot-playwright-typescript-instructions.md
 │       ├── QECopilot-playwright-java-instructions.md

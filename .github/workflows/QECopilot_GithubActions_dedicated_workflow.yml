@@ -29,7 +29,7 @@ on:
 env:
   # Choose your automation stack: playwright-typescript, playwright-java, selenium-java, webdriverio-typescript
   AUTOMATION_STACK: ${{ vars.AUTOMATION_STACK || 'playwright-typescript' }}
-  # Choose your LLM provider: copilot (default), openai, claude
+  # Choose your LLM provider: copilot (default), openai, claude, windsurf
   LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'copilot' }}
 
 jobs:
@@ -86,6 +86,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WINDSURF_API_KEY: ${{ secrets.WINDSURF_API_KEY }}
+          WINDSURF_API_URL: ${{ vars.WINDSURF_API_URL || '' }}
         run: |
           echo "${{ steps.changed_features.outputs.changed_files }}"
           for file in ${{ steps.changed_features.outputs.changed_files }}; do
@@ -95,8 +97,10 @@ jobs:
               node ./.github/scripts/generate-with-openai.js "$file" ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md
             elif [ "${{ env.LLM_PROVIDER }}" == "claude" ]; then
               node ./.github/scripts/generate-with-claude.js "$file" ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md
+            elif [ "${{ env.LLM_PROVIDER }}" == "windsurf" ]; then
+              node ./.github/scripts/generate-with-windsurf.js "$file" ./.github/instructions/QECopilot-${{ env.AUTOMATION_STACK }}-instructions.md
             else
-              echo "Error: Unknown LLM_PROVIDER '${{ env.LLM_PROVIDER }}'. Supported: copilot, openai, claude"
+              echo "Error: Unknown LLM_PROVIDER '${{ env.LLM_PROVIDER }}'. Supported: copilot, openai, claude, windsurf"
               exit 1
             fi
           done

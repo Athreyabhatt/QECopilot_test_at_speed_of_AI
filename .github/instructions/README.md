@@ -34,6 +34,22 @@ This directory contains instruction files for different automation tool combinat
 
 ## How to Use
 
+### LLM Provider Selection
+
+QECopilot supports multiple LLM providers for generating test automation scripts:
+
+- **copilot**: GitHub Copilot CLI (default)
+- **openai**: OpenAI GPT-4 via API
+- **claude**: Anthropic Claude via API  
+- **windsurf**: Windsurf SWE via API
+
+Configure the LLM provider using the `LLM_PROVIDER` environment variable or repository variable:
+
+```yaml
+env:
+  LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'copilot' }}
+```
+
 ### Option 1: Specify in Workflow (Recommended)
 
 Update your GitHub Actions workflow to specify which instruction file to use:
@@ -64,11 +80,31 @@ env:
 Configure in GitHub Repository Settings → Variables:
 - Variable name: `AUTOMATION_STACK`
 - Variable value: `playwright-typescript` or `selenium-java` etc.
+- Variable name: `LLM_PROVIDER`  
+- Variable value: `copilot`, `openai`, `claude`, or `windsurf`
 
 Then reference in workflow:
 ```yaml
 INSTRUCTIONS=$(cat ./.github/instructions/QECopilot-${{ vars.AUTOMATION_STACK }}-instructions.md)
 ```
+
+### Windsurf SWE Setup
+
+To use Windsurf SWE as your LLM provider:
+
+1. **Add API Key as GitHub Secret**:
+   - Secret name: `WINDSURF_API_KEY`
+   - Value: Your Windsurf SWE API key
+
+2. **Optional: Configure API URL** (if different from default):
+   - Variable name: `WINDSURF_API_URL`
+   - Value: `https://api.windsurf.ai/v1/chat/completions`
+
+3. **Set LLM Provider**:
+   ```yaml
+   env:
+     LLM_PROVIDER: windsurf
+   ```
 
 ## Customization
 
